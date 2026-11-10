@@ -1,0 +1,4 @@
+# Python 由 Ruff 负责，Prettier 不参与
+*.py
+.venv/
+__pycache__/

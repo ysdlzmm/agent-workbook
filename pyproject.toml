@@ -1,0 +1,5 @@
+# 仅存放工具链配置，不参与打包
+
+[tool.black]
+line-length = 88
+# 让 Black 与 settings.json 里的 --line-length=88 保持一致

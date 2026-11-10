@@ -1,0 +1,18 @@
+{
+  "recommendations": [
+    "ms-python.python",
+    "ms-python.vscode-pylance",
+    "ms-python.debugpy",
+    "ms-python.black-formatter",
+    "editorconfig.editorconfig",
+    "oderwat.indent-rainbow"
+  ],
+  "unwantedRecommendations": [
+    "esbenp.prettier-vscode",
+    "rvest.vs-code-prettier-eslint",
+    "ms-python.isort",
+    "ms-python.pylint",
+    "ms-python.flake8",
+    "ms-python.autopep8"
+  ]
+}

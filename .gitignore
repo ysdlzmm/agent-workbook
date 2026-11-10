@@ -18,4 +18,7 @@ dist/
 # ---- 编辑器 / 系统 ----
 .DS_Store
 .idea/
-.vscode/
+# 团队共享的 Python / 格式化配置需要入库，其余本地配置忽略
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
