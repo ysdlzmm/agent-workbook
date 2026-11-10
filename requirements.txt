@@ -1,0 +1,6 @@
+# 运行依赖：在 .venv 激活后执行 pip install -r requirements.txt
+openai>=1.0
+python-dotenv>=1.0
+tavily-python>=0.5
+
+# 格式化不需要装依赖：VSCode 的 Black 扩展自带二进制
