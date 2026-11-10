@@ -1,6 +1,7 @@
 """Tavily 网页搜索工具（chapter4 示例）。"""
 
 import os
+import json
 
 from dotenv import load_dotenv
 from tavily import TavilyClient
@@ -24,7 +25,9 @@ def search(query: str) -> str:
             query=query,
             max_results=3,
             topic="general",
-            include_answer=True,  # 直接返回总结答案
+            include_answer=True,
+            language="zh-cn",  # 优先中文
+            filter_by_language=True,  # 严格过滤，丢掉非中文页面
         )
 
         # 优先拿 Tavily 自带的总结 answer
@@ -35,9 +38,10 @@ def search(query: str) -> str:
         snippets = []
         for i, res in enumerate(results.get("results", [])):
             snippets.append(
-                f"[{i + 1}] {res.get('title', '')}\n{res.get('content', '')}"
+                f"[来源{i + 1}] {res.get('title', '')}\n{res.get('content', '')}"
             )
-        return "\n\n".join(snippets)
+        raw_text = "\n\n".join(snippets)
+        return raw_text
 
     except Exception as e:
         return f"搜索时发生错误：{e}"
