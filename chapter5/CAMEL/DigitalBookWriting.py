@@ -9,28 +9,45 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# chapter5 走阿里百炼（DashScope）的通义千问。
-# 不要复用 chapter4 的 LLM_BASE_URL / LLM_MODEL_ID —— 那套是智谱 GLM 的，
-# 与 QWEN 平台 + DASHSCOPE_API_KEY 混用会导致鉴权失败或 model 为空。
-QWEN_API_KEY = os.getenv("DASHSCOPE_API_KEY")
-QWEN_BASE_URL = os.getenv(
-    "QWEN_API_BASE_URL", "https://dashscope.aliyuncs.com/compatible-mode/v1"
-)
-QWEN_MODEL = os.getenv("QWEN_MODEL", "qwen-plus")
+# 模型服务二选一（.env 里用 LLM_PROVIDER 切换）：
+#   zhipu（默认）-> 智谱 GLM，复用 chapter4 的 LLM_* 三个变量
+#   qwen         -> 阿里百炼通义千问，用 DASHSCOPE_API_KEY 等
+# 两套服务的密钥、地址、模型名不能混用。
+# 阿里云百炼账户欠费 / 免费额度耗尽时，qwen 会返回 400 overdue-payment；
+# 账户恢复后把 LLM_PROVIDER 改成 qwen 即可切回教材示例。
+LLM_PROVIDER = os.getenv("LLM_PROVIDER", "zhipu").strip().lower()
 
-if not QWEN_API_KEY:
-    raise RuntimeError("缺少 DASHSCOPE_API_KEY，请在 .env 中填入阿里百炼的 API Key")
+if LLM_PROVIDER == "qwen":
+    api_key = os.getenv("DASHSCOPE_API_KEY")
+    if not api_key:
+        raise RuntimeError("缺少 DASHSCOPE_API_KEY，请在 .env 中填入阿里百炼 API Key")
+    model = ModelFactory.create(
+        model_platform=ModelPlatformType.QWEN,
+        model_type=os.getenv("QWEN_MODEL", "qwen-plus"),
+        url=os.getenv(
+            "QWEN_API_BASE_URL",
+            "https://dashscope.aliyuncs.com/compatible-mode/v1",
+        ),
+        api_key=api_key,
+    )
+elif LLM_PROVIDER == "zhipu":
+    api_key = os.getenv("LLM_API_KEY")
+    if not api_key:
+        raise RuntimeError("缺少 LLM_API_KEY，请在 .env 中填入智谱 API Key")
+    model = ModelFactory.create(
+        model_platform=ModelPlatformType.OPENAI_COMPATIBLE_MODEL,
+        model_type=os.getenv("LLM_MODEL_ID", "glm-4-flash"),
+        url=os.getenv("LLM_BASE_URL", "https://open.bigmodel.cn/api/paas/v4"),
+        api_key=api_key,
+    )
+else:
+    raise ValueError(f"未知的 LLM_PROVIDER={LLM_PROVIDER!r}，只能是 qwen 或 zhipu")
 
-model = ModelFactory.create(
-    model_platform=ModelPlatformType.QWEN,
-    model_type=QWEN_MODEL,
-    url=QWEN_BASE_URL,
-    api_key=QWEN_API_KEY,
-)
+print(Fore.YELLOW + f"当前模型服务: {LLM_PROVIDER}")
 
 # 定义协作任务
 task_prompt = """
-创作一本关于"拖延心理学"的短篇电子书，目标读者是对心理学感兴趣的普通大众。
+创作一本关于"拖延心理学"的中文短篇电子书，目标读者是对心理学感兴趣的普通大众。
 要求：
 1. 内容科学严谨，基于实证研究
 2. 语言通俗易懂，避免过多专业术语
