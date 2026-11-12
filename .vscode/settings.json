@@ -42,7 +42,7 @@
   "flake8.enabled": false,
 
   // ---------------- 拼写检查白名单 ----------------
-  // 否则 TAVILY / dotenv 等会被标 "Unknown word"
+  // 否则 DASHSCOPE / QWEN / dotenv 等会被标 "Unknown word"
   "cSpell.words": [
     "tavily",
     "serpapi",
@@ -50,7 +50,12 @@
     "pylance",
     "pyright",
     "pylint",
-    "llm"
+    "llm",
+    "dashscope",
+    "qwen",
+    "camel",
+    "colorama",
+    "bigmodel"
   ],
 
   // ---------------- 屏蔽虚拟环境噪声 ----------------
